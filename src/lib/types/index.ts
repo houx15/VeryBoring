@@ -1,13 +1,20 @@
 export type EntryType = 'eat' | 'move' | 'do' | 'go';
 
-export interface LLMProvider {
+export interface ProviderDefinition {
+  id: string;
   name: string;
-  apiKey: string;
+  protocol: 'openai' | 'anthropic';
+  baseUrl: string;
+  defaultModel: string;
+  models: string[];
+  placeholder: string;
 }
 
 export interface UserSettings {
-  provider: 'openai' | 'anthropic';
+  provider: string;
   apiKey: string;
+  model: string;
+  baseUrl: string;
   preferences: UserPreferences;
 }
 

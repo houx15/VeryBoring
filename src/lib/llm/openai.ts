@@ -1,15 +1,10 @@
-import {
-  LLMAuthError,
-  LLMError,
-  LLMRateLimitError,
-  LLMValidationError,
-} from './errors';
+import { LLMAuthError, LLMError, LLMRateLimitError, LLMValidationError } from './errors';
 import type { LLMGenerateOptions, LLMProvider } from './provider';
 
 const DEFAULT_MODEL = 'gpt-4o-mini';
 const DEFAULT_TEMPERATURE = 0.8;
 const DEFAULT_MAX_TOKENS = 500;
-const API_URL = 'https://api.openai.com/v1/chat/completions';
+const DEFAULT_BASE_URL = 'https://api.openai.com/v1';
 
 interface OpenAIChoice {
   message: { content: string | null };
@@ -22,6 +17,12 @@ interface OpenAIResponse {
 }
 
 export class OpenAIProvider implements LLMProvider {
+  private readonly apiUrl: string;
+
+  constructor(baseUrl: string = DEFAULT_BASE_URL) {
+    this.apiUrl = `${baseUrl}/chat/completions`;
+  }
+
   async generate(options: LLMGenerateOptions): Promise<string> {
     const {
       messages,
@@ -40,7 +41,7 @@ export class OpenAIProvider implements LLMProvider {
 
     let response: Response;
     try {
-      response = await fetch(API_URL, {
+      response = await fetch(this.apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -49,10 +50,7 @@ export class OpenAIProvider implements LLMProvider {
         body,
       });
     } catch {
-      throw new LLMError(
-        `网络请求失败，请检查网络连接`,
-        'NETWORK_ERROR',
-      );
+      throw new LLMError(`网络请求失败，请检查网络连接`, 'NETWORK_ERROR');
     }
 
     if (!response.ok) {
@@ -62,10 +60,7 @@ export class OpenAIProvider implements LLMProvider {
       if (response.status === 429) {
         throw new LLMRateLimitError();
       }
-      throw new LLMError(
-        `AI 服务暂时不可用，请稍后再试`,
-        'PROVIDER_ERROR',
-      );
+      throw new LLMError(`AI 服务暂时不可用，请稍后再试`, 'PROVIDER_ERROR');
     }
 
     let data: OpenAIResponse;
@@ -76,10 +71,7 @@ export class OpenAIProvider implements LLMProvider {
     }
 
     if (data.error) {
-      throw new LLMError(
-        `AI 服务报错: ${data.error.message}`,
-        'PROVIDER_ERROR',
-      );
+      throw new LLMError(`AI 服务报错: ${data.error.message}`, 'PROVIDER_ERROR');
     }
 
     const content = data.choices?.[0]?.message?.content;

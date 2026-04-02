@@ -20,16 +20,14 @@ export interface LLMProvider {
   generate(options: LLMGenerateOptions): Promise<string>;
 }
 
-export type ProviderName = 'openai' | 'anthropic';
-
-export function createProvider(provider: ProviderName): LLMProvider {
-  switch (provider) {
+export function createProvider(protocol: 'openai' | 'anthropic', baseUrl: string): LLMProvider {
+  switch (protocol) {
     case 'openai':
-      return new OpenAIProvider();
+      return new OpenAIProvider(baseUrl);
     case 'anthropic':
-      return new AnthropicProvider();
+      return new AnthropicProvider(baseUrl);
     default:
-      throw new Error(`不支持的 AI 服务: ${provider satisfies never}`);
+      throw new Error(`不支持的 AI 协议: ${protocol satisfies never}`);
   }
 }
 

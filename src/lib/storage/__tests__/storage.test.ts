@@ -16,6 +16,8 @@ import {
 const sampleSettings: UserSettings = {
   provider: 'openai',
   apiKey: 'sk-test-key',
+  model: 'gpt-4o-mini',
+  baseUrl: 'https://api.openai.com/v1',
   preferences: { diet: 'light', activity: 'outdoor' },
 };
 
@@ -56,6 +58,8 @@ describe('Settings storage', () => {
       ...sampleSettings,
       provider: 'anthropic',
       apiKey: 'ant-key',
+      model: 'claude-sonnet-4-20250514',
+      baseUrl: 'https://api.anthropic.com',
     };
     saveSettings(updated);
     expect(getSettings()).toEqual(updated);
