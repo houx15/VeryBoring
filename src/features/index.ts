@@ -15,11 +15,11 @@ export function getQuestions(entryType: EntryType): Question[] {
   return questionSets[entryType];
 }
 
-export const entryLabels: Record<EntryType, { title: string; emoji: string }> = {
-  eat: { title: '吃点东西', emoji: '🍜' },
-  move: { title: '来点运动', emoji: '🏃' },
-  do: { title: '做点啥', emoji: '✨' },
-  go: { title: '去哪玩', emoji: '🗺️' },
+export const entryLabels: Record<EntryType, { title: string; icon: string }> = {
+  eat: { title: '吃点东西', icon: 'Utensils' },
+  move: { title: '来点运动', icon: 'Activity' },
+  do: { title: '做点啥', icon: 'Sparkles' },
+  go: { title: '去哪玩', icon: 'Compass' },
 };
 
 export { eatQuestions, moveQuestions, doQuestions, goQuestions };

@@ -31,13 +31,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN">
-      <body className="min-h-screen flex flex-col bg-background text-foreground antialiased">
-        <main className="flex-1 flex flex-col">{children}</main>
-        <footer className="w-full py-16 px-16 md:px-24">
-          <div className="w-full max-w-[640px] mx-auto flex justify-end">
+      <body className="bg-background text-foreground flex min-h-screen flex-col antialiased">
+        <main className="flex flex-1 flex-col">{children}</main>
+        <footer className="w-full border-t border-neutral-200/80 px-16 py-16 md:px-24">
+          <div className="mx-auto flex w-full max-w-[640px] items-center justify-between">
+            <span className="text-[13px] font-medium tracking-tight text-neutral-400">
+              Very Boring
+            </span>
             <Link
               href="/settings"
-              className="text-neutral-400 hover:text-neutral-600 transition-colors duration-fast"
+              className="duration-fast -mr-8 rounded-lg p-8 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-600"
               aria-label="设置"
             >
               <svg
@@ -47,7 +50,7 @@ export default function RootLayout({
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2"
+                strokeWidth="1.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >

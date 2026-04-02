@@ -1,1 +1,408 @@
-@import"tailwindcss";@theme inline{--color-background:#f8f7f5;--color-foreground:#1a1a1a;--color-primary:#6B705C;--color-primary-hover:#585c4f;--color-secondary:#8D99AE;--color-secondary-hover:#7a8596;--font-sans:"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;--font-serif:Georgia,"Noto Serif SC",serif;--spacing-8:8px;--spacing-16:16px;--spacing-24:24px;--spacing-32:32px;--spacing-40:40px;--spacing-48:48px;--spacing-56:56px;--spacing-64:64px;--spacing-72:72px;--spacing-80:80px;--spacing-96:96px;--spacing-120:120px;--color-neutral-50:#fafaf9;--color-neutral-100:#f5f5f4;--color-neutral-200:#e7e5e4;--color-neutral-300:#d6d3d1;--color-neutral-400:#a8a29e;--color-neutral-500:#78716c;--color-neutral-600:#57534e;--color-neutral-700:#44403c;--color-neutral-800:#292524;--color-neutral-900:#1c1917;--color-success:#6B8E6B;--color-warning:#C4A35A;--color-error:#B87070;--duration-fast:150ms;--duration-normal:200ms;--duration-slow:300ms;--ease-smooth:cubic-bezier(0.4, 0, 0.2, 1)}*{box-sizing:border-box}html{scroll-behavior:smooth}body{background:var(--color-background);color:var(--color-foreground);font-family:var(--font-sans);line-height:1.5;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}@keyframes fade-in{0%{opacity:0}100%{opacity:1}}@keyframes fade-in-up{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:translateY(0)}}@keyframes loading-dot{0%,100%{opacity:0.3}50%{opacity:1}}.animate-fade-in{animation:fade-in 300ms var(--ease-smooth) forwards}.animate-fade-in-up{animation:fade-in-up 300ms var(--ease-smooth) forwards}.animate-loading-dot{animation:loading-dot 1.2s ease-in-out infinite}
+@import 'tailwindcss';
+
+@theme inline {
+  /* ============================================
+     COLORS - Warm Calm Palette
+     ============================================ */
+  --color-background: #f8f7f5;
+  --color-foreground: #1a1a1a;
+
+  /* Primary: Warm Olive - inviting, grounded */
+  --color-primary: #7a7b5c;
+  --color-primary-hover: #6b6c4f;
+  --color-primary-active: #5c5d42;
+
+  /* Secondary: Soft Muted Blue */
+  --color-secondary: #8d99ae;
+  --color-secondary-hover: #7a8596;
+
+  /* Accent: Warm Terracotta - for highlights and fun moments */
+  --color-accent: #c8956a;
+  --color-accent-light: #d9b08c;
+
+  /* Neutral: Warm grays */
+  --color-neutral-50: #fafaf9;
+  --color-neutral-100: #f5f5f4;
+  --color-neutral-200: #e7e5e4;
+  --color-neutral-300: #d6d3d1;
+  --color-neutral-400: #a8a29e;
+  --color-neutral-500: #78716c;
+  --color-neutral-600: #57534e;
+  --color-neutral-700: #44403c;
+  --color-neutral-800: #292524;
+  --color-neutral-900: #1c1917;
+
+  /* Semantic colors */
+  --color-success: #6b8e6b;
+  --color-warning: #c4a35a;
+  --color-error: #b87070;
+
+  /* Card special - for gacha/shuffle effects */
+  --color-card-back: #7a7b5c;
+  --color-card-back-dark: #6b6c4f;
+  --color-card-pattern: rgba(255, 255, 255, 0.1);
+
+  /* ============================================
+     TYPOGRAPHY
+     ============================================ */
+  --font-sans: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', system-ui, sans-serif;
+  --font-serif: Georgia, 'Noto Serif SC', serif;
+
+  /* ============================================
+     SPACING
+     ============================================ */
+  --spacing-8: 8px;
+  --spacing-16: 16px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-40: 40px;
+  --spacing-48: 48px;
+  --spacing-56: 56px;
+  --spacing-64: 64px;
+  --spacing-72: 72px;
+  --spacing-80: 80px;
+  --spacing-96: 96px;
+  --spacing-120: 120px;
+
+  /* ============================================
+     DURATIONS
+     ============================================ */
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-medium: 300ms;
+  --duration-slow: 400ms;
+
+  /* ============================================
+     EASING CURVES - With Personality
+     ============================================ */
+  /* Smooth, elegant deceleration */
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-elegant: cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  /* Springy, playful bounce */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Dramatic entrance */
+  --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+
+  /* Card shuffle - erratic, fun */
+  --ease-shuffle: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* Shadows - warm depth */
+  --shadow-sm: 0 1px 2px 0 rgba(26, 26, 26, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(26, 26, 26, 0.08), 0 2px 4px -1px rgba(26, 26, 26, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(26, 26, 26, 0.1), 0 4px 6px -2px rgba(26, 26, 26, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(26, 26, 26, 0.1), 0 10px 10px -5px rgba(26, 26, 26, 0.04);
+  --shadow-warm: 0 4px 14px 0 rgba(122, 123, 92, 0.15);
+  --shadow-warm-lg: 0 8px 30px 0 rgba(122, 123, 92, 0.2);
+}
+
+/* ============================================
+   GLOBAL STYLES
+   ============================================ */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   KEYFRAME ANIMATIONS
+   ============================================ */
+
+/* Fade in from nothing */
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Fade in with upward motion */
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Float in with bounce */
+@keyframes float-in {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  60% {
+    transform: translateY(-4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Legacy loading dot animation (kept for compatibility) */
+@keyframes loading-dot {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Shimmer effect - light sweep */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Soft pulse for interactive elements */
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+}
+
+/* Check mark draw animation */
+@keyframes check-draw {
+  0% {
+    stroke-dashoffset: 100;
+    opacity: 0;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+/* Card shuffle - rapid wobbling */
+@keyframes card-shuffle {
+  0%,
+  100% {
+    transform: translateX(0) rotateY(0deg) rotateZ(0deg);
+  }
+  10% {
+    transform: translateX(-8px) rotateY(-5deg) rotateZ(-2deg);
+  }
+  20% {
+    transform: translateX(8px) rotateY(5deg) rotateZ(2deg);
+  }
+  30% {
+    transform: translateX(-6px) rotateY(-3deg) rotateZ(-1deg);
+  }
+  40% {
+    transform: translateX(6px) rotateY(3deg) rotateZ(1deg);
+  }
+  50% {
+    transform: translateX(-4px) rotateY(-2deg) rotateZ(-0.5deg);
+  }
+  60% {
+    transform: translateX(4px) rotateY(2deg) rotateZ(0.5deg);
+  }
+  70% {
+    transform: translateX(-2px) rotateY(-1deg) rotateZ(-0.25deg);
+  }
+  80% {
+    transform: translateX(2px) rotateY(1deg) rotateZ(0.25deg);
+  }
+  90% {
+    transform: translateX(-1px) rotateY(-0.5deg) rotateZ(-0.1deg);
+  }
+}
+
+/* Card shuffle jump - little hops */
+@keyframes card-shuffle-jump {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  25% {
+    transform: translateY(-4px) scale(1.02);
+  }
+  50% {
+    transform: translateY(2px) scale(0.98);
+  }
+  75% {
+    transform: translateY(-2px) scale(1.01);
+  }
+}
+
+/* Card reveal - flip from back to front */
+@keyframes card-reveal {
+  0% {
+    transform: rotateY(180deg) scale(0.95);
+    opacity: 0;
+  }
+  30% {
+    transform: rotateY(90deg) scale(0.97);
+    opacity: 0.5;
+  }
+  60% {
+    transform: rotateY(-10deg) scale(1.02);
+  }
+  80% {
+    transform: rotateY(5deg) scale(0.99);
+  }
+  100% {
+    transform: rotateY(0deg) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Icon flash - quick scale and fade */
+@keyframes icon-flash {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) rotate(-10deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1) rotate(0deg);
+  }
+  100% {
+    opacity: 0.9;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* ============================================
+   ANIMATION UTILITY CLASSES
+   ============================================ */
+.animate-fade-in {
+  animation: fade-in 300ms var(--ease-smooth) forwards;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 350ms var(--ease-out-expo) forwards;
+}
+
+.animate-float-in {
+  animation: float-in 400ms var(--ease-spring) forwards;
+}
+
+.animate-loading-dot {
+  animation: loading-dot 1.2s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s var(--ease-smooth) infinite;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2s var(--ease-smooth) infinite;
+}
+
+.animate-check-draw {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: check-draw 600ms var(--ease-out-expo) forwards;
+}
+
+.animate-card-shuffle {
+  animation: card-shuffle 600ms var(--ease-shuffle) infinite;
+}
+
+.animate-card-shuffle-jump {
+  animation: card-shuffle-jump 300ms var(--ease-spring) infinite;
+}
+
+.animate-card-reveal {
+  animation: card-reveal 600ms var(--ease-spring) forwards;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+.animate-icon-flash {
+  animation: icon-flash 200ms var(--ease-spring) forwards;
+}
+
+/* ============================================
+   CARD PATTERN BACKGROUND
+   ============================================ */
+.card-pattern {
+  background-color: var(--color-card-back);
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      var(--color-card-pattern) 10px,
+      var(--color-card-pattern) 12px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 10px,
+      var(--color-card-pattern) 10px,
+      var(--color-card-pattern) 12px
+    );
+  background-size: 28px 28px;
+}
+
+.card-pattern-diagonal {
+  background-color: var(--color-card-back);
+  background-image: repeating-linear-gradient(
+    60deg,
+    var(--color-card-pattern),
+    var(--color-card-pattern) 2px,
+    transparent 2px,
+    transparent 20px
+  );
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
