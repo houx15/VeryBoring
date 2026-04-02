@@ -7,6 +7,7 @@ import { QuestionFlow } from '@/components/QuestionFlow';
 import { SnippetResult as SnippetResultCard } from '@/components/SnippetResult';
 import { LoadingDots } from '@/components/ui/LoadingDots';
 import { Button } from '@/components/ui/Button';
+import { Icon } from '@/components/ui/Icon';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { getQuestions, entryLabels } from '@/features';
 import { getSettings } from '@/lib/storage/settings';
@@ -26,6 +27,7 @@ export default function EntryPage() {
   const [errorMessage, setErrorMessage] = useState('');
   const [snippetText, setSnippetText] = useState('');
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [userContext, setUserContext] = useState('');
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [isExplaining, setIsExplaining] = useState(false);
   const [explanation, setExplanation] = useState<string | null>(null);
@@ -45,7 +47,12 @@ export default function EntryPage() {
   }, [entryType, router]);
 
   const callGenerate = useCallback(
-    async (userAnswers: Record<string, string>) => {
+    async (
+      userAnswers: Record<string, string>,
+      context?: string,
+      previousSnippet?: string,
+      feedback?: string,
+    ) => {
       const settings = getSettings();
       if (!settings || !settings.apiKey) {
         setPageState('error');
@@ -64,7 +71,12 @@ export default function EntryPage() {
             answers: userAnswers,
             provider: settings.provider,
             apiKey: settings.apiKey,
+            model: settings.model,
+            baseUrl: settings.baseUrl,
             preferences: settings.preferences,
+            context,
+            previousSnippet,
+            feedback,
           }),
         });
 
@@ -88,9 +100,10 @@ export default function EntryPage() {
   );
 
   const handleComplete = useCallback(
-    (userAnswers: Record<string, string>) => {
-      setAnswers(userAnswers);
-      callGenerate(userAnswers);
+    (data: { answers: Record<string, string>; context: string }) => {
+      setAnswers(data.answers);
+      setUserContext(data.context);
+      callGenerate(data.answers, data.context);
     },
     [callGenerate],
   );
@@ -114,10 +127,15 @@ export default function EntryPage() {
     setAccepted(true);
   }, [entryType, snippetText, answers]);
 
-  const handleRegenerate = useCallback(() => {
-    setIsRegenerating(true);
-    callGenerate(answers).finally(() => setIsRegenerating(false));
-  }, [answers, callGenerate]);
+  const handleRegenerate = useCallback(
+    (feedback?: string) => {
+      setIsRegenerating(true);
+      callGenerate(answers, userContext, snippetText, feedback).finally(() =>
+        setIsRegenerating(false),
+      );
+    },
+    [answers, userContext, snippetText, callGenerate],
+  );
 
   const handleExplain = useCallback(async () => {
     const settings = getSettings();
@@ -134,6 +152,8 @@ export default function EntryPage() {
           snippet: snippetText,
           provider: settings.provider,
           apiKey: settings.apiKey,
+          model: settings.model,
+          baseUrl: settings.baseUrl,
         }),
       });
 
@@ -154,39 +174,41 @@ export default function EntryPage() {
   }
 
   return (
-    <div className="flex-1 flex flex-col py-24 md:py-32">
-      <PageContainer>
-        <Link
-          href="/"
-          className="inline-flex items-center text-sm text-neutral-500 hover:text-neutral-700 transition-colors duration-fast mb-24"
-        >
-          ← 返回
-        </Link>
-      </PageContainer>
-
+    <div className="flex flex-1 flex-col py-24 md:py-32">
       {pageState === 'questions' && (
         <QuestionFlow questions={questions} onComplete={handleComplete} />
       )}
 
       {pageState === 'loading' && (
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex flex-1 items-center justify-center">
           <LoadingDots text="想一个不错的..." />
         </div>
       )}
 
       {pageState === 'error' && (
         <PageContainer>
-          <div className="text-center py-64">
-            <p className="text-neutral-600 mb-24">{errorMessage}</p>
-            {errorMessage.includes('API 密钥') ? (
-              <Link href="/settings">
-                <Button variant="primary">去设置</Button>
-              </Link>
-            ) : (
-              <Button variant="primary" onClick={() => setPageState('questions')}>
-                再试一次
-              </Button>
-            )}
+          <div className="py-64 text-center">
+            <div className="mb-24 flex flex-col items-center gap-16">
+              <div className="flex h-48 w-48 items-center justify-center rounded-full bg-neutral-100">
+                <Icon name="AlertCircle" size={24} className="text-neutral-400" strokeWidth={1.5} />
+              </div>
+              <p className="font-medium text-neutral-600">{errorMessage}</p>
+            </div>
+            <div className="flex items-center justify-center gap-12">
+              {errorMessage.includes('API 密钥') ? (
+                <Link href="/settings">
+                  <Button variant="primary">
+                    <Icon name="Settings" size={16} className="mr-8" strokeWidth={1.5} />
+                    去设置
+                  </Button>
+                </Link>
+              ) : (
+                <Button variant="primary" onClick={() => setPageState('questions')}>
+                  <Icon name="RefreshCw" size={16} className="mr-8" strokeWidth={1.5} />
+                  再试一次
+                </Button>
+              )}
+            </div>
           </div>
         </PageContainer>
       )}
@@ -194,12 +216,18 @@ export default function EntryPage() {
       {pageState === 'result' && snippetText && (
         <PageContainer>
           {accepted ? (
-            <div className="text-center py-64 animate-fade-in-up">
-              <p className="font-serif text-2xl text-neutral-600 mb-16">很好，就这样吧 ✓</p>
+            <div className="animate-fade-in-up py-64 text-center">
+              <div className="bg-primary/10 mx-auto mb-24 inline-flex h-48 w-48 items-center justify-center rounded-full">
+                <Icon name="Check" size={24} className="text-primary" strokeWidth={2.5} />
+              </div>
+              <p className="mb-16 font-serif text-2xl text-neutral-600">很好，就这样吧</p>
               <p className="text-sm text-neutral-400">已保存到历史记录</p>
               <div className="mt-32">
                 <Link href="/">
-                  <Button variant="secondary">回到首页</Button>
+                  <Button variant="secondary">
+                    <Icon name="Home" size={16} className="mr-8" strokeWidth={1.5} />
+                    回到首页
+                  </Button>
                 </Link>
               </div>
             </div>

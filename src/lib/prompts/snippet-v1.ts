@@ -59,20 +59,43 @@ export function buildSnippetPrompt(
   entryType: EntryType,
   answers: Record<string, string>,
   preferences?: UserPreferences,
+  context?: string,
+  previousSnippet?: string,
+  feedback?: string,
 ): LLMMessage[] {
   const contextLabel = ENTRY_TYPE_LABEL[entryType];
   const answersText = formatAnswers(answers);
   const preferencesText = formatPreferences(preferences);
 
-  const userMessage = `${contextLabel}。
+  const parts: string[] = [`${contextLabel}。`, '', '用户回答了以下问题：', answersText];
 
-用户回答了以下问题：
-${answersText}${preferencesText}
+  if (preferencesText) {
+    parts.push(preferencesText);
+  }
 
-请给出一个具体可执行的"生活片段"建议。只给一个，不要给多个。`;
+  if (context) {
+    parts.push('');
+    parts.push(`用户补充说明: ${context}`);
+  }
 
-  return [
+  parts.push('');
+  parts.push('请给出一个具体可执行的"生活片段"建议。只给一个，不要给多个。');
+
+  const messages: LLMMessage[] = [
     { role: 'system', content: SYSTEM_PROMPT },
-    { role: 'user', content: userMessage },
+    { role: 'user', content: parts.join('\n') },
   ];
+
+  if (previousSnippet && feedback) {
+    messages.push({
+      role: 'assistant',
+      content: previousSnippet,
+    });
+    messages.push({
+      role: 'user',
+      content: `上次的建议是: ${previousSnippet}\n用户觉得不合适，原因是: ${feedback}\n请给出一个新的建议。`,
+    });
+  }
+
+  return messages;
 }
