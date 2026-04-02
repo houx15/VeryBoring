@@ -60,6 +60,8 @@ export default function SettingsPage() {
   });
   const [showApiKey, setShowApiKey] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [isTesting, setIsTesting] = useState(false);
+  const [testError, setTestError] = useState<string | null>(null);
 
   const providers = useMemo(() => getAllProviders(), []);
   const selectedProvider = useMemo(
@@ -96,17 +98,45 @@ export default function SettingsPage() {
     }
   };
 
-  const handleSave = () => {
-    const settings = {
-      provider: formState.provider,
-      apiKey: formState.apiKey,
-      model: formState.model,
-      baseUrl: formState.baseUrl,
-      preferences: {} as UserPreferences,
-    };
-    saveSettings(settings);
-    setIsSaved(true);
-    setTimeout(() => setIsSaved(false), 2000);
+  const handleSave = async () => {
+    setTestError(null);
+    setIsTesting(true);
+
+    try {
+      const res = await fetch('/api/test-connection', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          provider: formState.provider,
+          apiKey: formState.apiKey,
+          model: formState.model,
+          baseUrl: formState.baseUrl,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        setTestError(data.error ?? '连接测试失败');
+        setIsTesting(false);
+        return;
+      }
+
+      const settings = {
+        provider: formState.provider,
+        apiKey: formState.apiKey,
+        model: formState.model,
+        baseUrl: formState.baseUrl,
+        preferences: {} as UserPreferences,
+      };
+      saveSettings(settings);
+      setIsTesting(false);
+      setIsSaved(true);
+      setTimeout(() => setIsSaved(false), 2000);
+    } catch {
+      setTestError('网络错误，请检查连接');
+      setIsTesting(false);
+    }
   };
 
   const canSave = formState.provider && formState.apiKey && formState.model;
@@ -250,10 +280,18 @@ export default function SettingsPage() {
             </Card>
 
             <div className="flex flex-col gap-16">
-              <Button onClick={handleSave} disabled={!canSave} className="w-full">
-                保存
+              <Button onClick={handleSave} disabled={!canSave || isTesting} className="w-full">
+                {isTesting ? '测试连接中...' : '保存'}
               </Button>
               <div className="flex h-24 items-center justify-center">
+                {testError && (
+                  <div className="text-danger animate-fade-in flex items-center gap-8">
+                    <div className="bg-danger/10 flex h-20 w-20 items-center justify-center rounded-full">
+                      <Icon name="X" size={14} strokeWidth={2.5} className="text-danger" />
+                    </div>
+                    <span className="text-[14px] font-medium">{testError}</span>
+                  </div>
+                )}
                 {isSaved && (
                   <div className="text-success animate-fade-in flex items-center gap-8">
                     <div className="bg-success/10 flex h-20 w-20 items-center justify-center rounded-full">

@@ -12,6 +12,7 @@ export const eatQuestions: Question[] = [
   {
     id: 'ingredients',
     text: '有现成食材吗？',
+    condition: { questionId: 'location', answerIds: ['home'] },
     options: [
       { id: 'yes', label: '有食材', icon: 'Leaf' },
       { id: 'no', label: '啥也没有', icon: 'HelpCircle' },

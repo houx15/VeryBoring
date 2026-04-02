@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Question } from '@/lib/types';
 import { OptionButton } from '@/components/ui/OptionButton';
@@ -27,8 +27,16 @@ export function QuestionFlow({ questions, onComplete }: QuestionFlowProps) {
   const autoAdvanceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const currentQuestion = questions[currentIndex];
-  const isLastQuestion = currentIndex === questions.length - 1;
+  const activeQuestions = useMemo(() => {
+    return questions.filter((q) => {
+      if (!q.condition) return true;
+      const answer = answers[q.condition.questionId];
+      return answer !== undefined && q.condition.answerIds.includes(answer);
+    });
+  }, [questions, answers]);
+
+  const currentQuestion = activeQuestions[currentIndex];
+  const isLastQuestion = currentIndex === activeQuestions.length - 1;
   const hasAnsweredCurrent = currentQuestion?.id
     ? answers[currentQuestion.id] !== undefined
     : false;
@@ -149,7 +157,7 @@ export function QuestionFlow({ questions, onComplete }: QuestionFlowProps) {
   return (
     <PageContainer>
       <div className="mb-32 flex items-center justify-center gap-12">
-        {questions.map((_, index) => (
+        {activeQuestions.map((_, index) => (
           <div
             key={index}
             className={`ease-smooth h-8 rounded-full transition-all duration-300 ${
@@ -174,7 +182,7 @@ export function QuestionFlow({ questions, onComplete }: QuestionFlowProps) {
           <span className="text-sm">{currentIndex === 0 ? '返回首页' : '上一题'}</span>
         </Button>
         <span className="text-sm font-medium text-neutral-400">
-          {currentIndex + 1} / {questions.length}
+          {currentIndex + 1} / {activeQuestions.length}
         </span>
       </div>
 
@@ -245,7 +253,7 @@ export function QuestionFlow({ questions, onComplete }: QuestionFlowProps) {
             className={`ease-smooth absolute inset-0 transition-all duration-300 ${getIncomingStyles()}`}
           >
             <h2 className="text-foreground mb-32 font-serif text-xl leading-relaxed md:text-2xl">
-              {questions[direction === 'forward' ? currentIndex + 1 : currentIndex - 1]?.text}
+              {activeQuestions[direction === 'forward' ? currentIndex + 1 : currentIndex - 1]?.text}
             </h2>
           </div>
         )}

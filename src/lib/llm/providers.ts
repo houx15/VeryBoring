@@ -6,8 +6,8 @@ export const PROVIDER_REGISTRY: ProviderDefinition[] = [
     name: 'OpenAI',
     protocol: 'openai',
     baseUrl: 'https://api.openai.com/v1',
-    defaultModel: 'gpt-4o-mini',
-    models: ['gpt-4o-mini', 'gpt-4o', 'gpt-4.1-mini', 'gpt-4.1', 'o3-mini'],
+    defaultModel: 'gpt-4.1-mini',
+    models: ['gpt-4.1-mini', 'gpt-4.1', 'gpt-4.1-nano', 'o3', 'o4-mini'],
     placeholder: 'sk-...',
   },
   {
@@ -16,7 +16,7 @@ export const PROVIDER_REGISTRY: ProviderDefinition[] = [
     protocol: 'anthropic',
     baseUrl: 'https://api.anthropic.com',
     defaultModel: 'claude-sonnet-4-20250514',
-    models: ['claude-sonnet-4-20250514', 'claude-3-5-haiku-20241022', 'claude-3-5-sonnet-20241022'],
+    models: ['claude-sonnet-4-20250514', 'claude-haiku-4-20250414', 'claude-3-5-haiku-20241022'],
     placeholder: 'sk-ant-...',
   },
   {
@@ -24,8 +24,8 @@ export const PROVIDER_REGISTRY: ProviderDefinition[] = [
     name: 'Gemini',
     protocol: 'openai',
     baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai',
-    defaultModel: 'gemini-2.0-flash',
-    models: ['gemini-2.0-flash', 'gemini-2.5-flash-preview-05-20', 'gemini-2.5-pro-preview-05-06'],
+    defaultModel: 'gemini-2.5-flash',
+    models: ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-2.0-flash'],
     placeholder: 'AIza...',
   },
   {
@@ -33,8 +33,8 @@ export const PROVIDER_REGISTRY: ProviderDefinition[] = [
     name: 'Kimi',
     protocol: 'openai',
     baseUrl: 'https://api.moonshot.cn/v1',
-    defaultModel: 'moonshot-v1-8k',
-    models: ['moonshot-v1-8k', 'moonshot-v1-32k', 'moonshot-v1-128k'],
+    defaultModel: 'moonshot-v1-128k',
+    models: ['moonshot-v1-128k', 'moonshot-v1-32k', 'kimi-latest'],
     placeholder: 'sk-...',
   },
   {
@@ -42,8 +42,8 @@ export const PROVIDER_REGISTRY: ProviderDefinition[] = [
     name: 'Qwen',
     protocol: 'openai',
     baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
-    defaultModel: 'qwen-turbo',
-    models: ['qwen-turbo', 'qwen-plus', 'qwen-max'],
+    defaultModel: 'qwen3-235b-a22b',
+    models: ['qwen3-235b-a22b', 'qwen-plus', 'qwen-turbo', 'qwen-max'],
     placeholder: 'sk-...',
   },
   {
@@ -61,7 +61,7 @@ export const PROVIDER_REGISTRY: ProviderDefinition[] = [
     protocol: 'openai',
     baseUrl: 'https://open.bigmodel.cn/api/paas/v4',
     defaultModel: 'glm-4-flash',
-    models: ['glm-4-flash', 'glm-4-air', 'glm-4-plus', 'glm-4-long'],
+    models: ['glm-4-flash', 'glm-4-air', 'glm-4-plus', 'glm-4-long', 'glm-z1-flash'],
     placeholder: 'xxx.yyy...',
   },
   {
@@ -69,8 +69,8 @@ export const PROVIDER_REGISTRY: ProviderDefinition[] = [
     name: 'Volcengine',
     protocol: 'openai',
     baseUrl: 'https://ark.cn-beijing.volces.com/api/v3',
-    defaultModel: 'doubao-1.5-pro-32k',
-    models: ['doubao-1.5-pro-32k', 'doubao-1.5-pro-256k', 'doubao-1.5-lite-32k'],
+    defaultModel: 'doubao-1.5-pro-256k',
+    models: ['doubao-1.5-pro-256k', 'doubao-1.5-pro-32k', 'doubao-1.5-lite-32k'],
     placeholder: 'ep-...',
   },
   {
@@ -78,8 +78,8 @@ export const PROVIDER_REGISTRY: ProviderDefinition[] = [
     name: 'MiniMax',
     protocol: 'openai',
     baseUrl: 'https://api.minimax.chat/v1',
-    defaultModel: 'MiniMax-Text-01',
-    models: ['MiniMax-Text-01'],
+    defaultModel: 'MiniMax-M1',
+    models: ['MiniMax-M1', 'MiniMax-Text-01'],
     placeholder: '...',
   },
 ];

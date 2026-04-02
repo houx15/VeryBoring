@@ -31,11 +31,17 @@ export interface QuestionOption {
   icon?: string;
 }
 
+export interface QuestionCondition {
+  questionId: string;
+  answerIds: string[];
+}
+
 export interface Question {
   id: string;
   text: string;
   options: QuestionOption[];
   followUp?: Record<string, string>;
+  condition?: QuestionCondition;
 }
 
 export interface SnippetResult {
