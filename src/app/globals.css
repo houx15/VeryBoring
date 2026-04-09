@@ -501,8 +501,9 @@ body {
 
 /* Utility classes for new animations */
 .animate-card-appear {
-  animation: card-appear 500ms var(--ease-out-expo) forwards;
-  opacity: 0;
+  animation:
+    card-appear 500ms var(--ease-out-expo) forwards,
+    card-float 3s var(--ease-smooth) 500ms infinite;
 }
 
 .animate-card-float {
