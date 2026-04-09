@@ -129,8 +129,9 @@ describe('Narrative Prompts', () => {
       const messages = buildConcludePrompt(context, history);
       const systemMessage = messages[0].content;
 
-      expect(systemMessage).toContain('小纸条');
+      expect(systemMessage).toContain('纸条');
       expect(systemMessage).toContain('第二人称');
+      expect(systemMessage).toContain('行动');
     });
 
     it('user message includes narrative history', () => {
@@ -153,6 +154,7 @@ describe('Narrative Prompts', () => {
 
       expect(userMessage).toContain('镜');
       expect(userMessage).toContain('精确');
+      expect(userMessage).toContain('纸条');
     });
   });
 });

@@ -57,7 +57,7 @@ export function CardDraw({ onCardSelected }: CardDrawProps) {
           Very Boring
         </h1>
         <p className="mt-16 text-[16px] leading-relaxed text-neutral-500 md:text-[18px]">
-          选一张牌。
+          感到无聊？来抽张牌玩个游戏吧
         </p>
       </div>
 

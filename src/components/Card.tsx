@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { getElementConfig } from '@/lib/symbols';
 import { SYMBOL_SVG_MAP } from '@/lib/symbols/svg-patterns';
 import type { SymbolDefinition } from '@/lib/types';
@@ -23,12 +24,19 @@ export function Card({
   revealDelay,
   onSelect,
 }: CardProps) {
+  const [hasAppeared, setHasAppeared] = useState(false);
   const elementConfig = getElementConfig(symbol.element);
   const SymbolSVG = SYMBOL_SVG_MAP[symbol.id];
 
   const handleClick = () => {
     if (!isRevealed || isSelected || isDiscarded) return;
     onSelect(position);
+  };
+
+  const handleAnimationEnd = (e: React.AnimationEvent) => {
+    if (e.animationName === 'card-appear') {
+      setHasAppeared(true);
+    }
   };
 
   const animationStyle: React.CSSProperties = isRevealed
@@ -43,7 +51,10 @@ export function Card({
       return 'animate-card-select-glow scale-110 z-10';
     }
     if (isRevealed) {
-      return 'animate-card-appear animate-card-float cursor-pointer hover:-translate-y-8 hover:shadow-warm-lg';
+      if (!hasAppeared) {
+        return 'animate-card-appear cursor-pointer hover:-translate-y-8 hover:shadow-warm-lg';
+      }
+      return 'animate-card-float cursor-pointer hover:-translate-y-8 hover:shadow-warm-lg';
     }
     return 'card-pattern';
   };
@@ -52,6 +63,7 @@ export function Card({
     <button
       type="button"
       onClick={handleClick}
+      onAnimationEnd={handleAnimationEnd}
       disabled={!isRevealed || isSelected || isDiscarded}
       className={`relative flex h-[140px] w-[100px] flex-col items-center justify-center rounded-xl border-2 bg-[#faf8f4] transition-all duration-300 md:h-[168px] md:w-[120px] ${getStateClasses()} `}
       style={{

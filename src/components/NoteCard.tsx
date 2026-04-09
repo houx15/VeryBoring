@@ -26,6 +26,11 @@ export function NoteCard({ note, onDelete }: NoteCardProps) {
     day: 'numeric',
   });
 
+  const timeStr = new Date(note.createdAt).toLocaleTimeString('zh-CN', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
   return (
     <div
       className="group relative cursor-pointer rounded-lg bg-[#faf6ed] px-24 py-20 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
@@ -56,9 +61,13 @@ export function NoteCard({ note, onDelete }: NoteCardProps) {
         </svg>
       </button>
 
-      <div className="mb-12 flex items-center gap-8">
+      <div className="mb-12 flex flex-wrap items-center gap-8">
         <span className="text-[12px] text-neutral-400">{note.symbolName}</span>
-        <span className="text-[11px] text-neutral-300">{dateStr}</span>
+        <span className="text-[11px] text-neutral-300">
+          {dateStr} {timeStr}
+        </span>
+        {note.season && <span className="text-[11px] text-neutral-300">{note.season}</span>}
+        {note.timeOfDay && <span className="text-[11px] text-neutral-300">{note.timeOfDay}</span>}
       </div>
 
       <p

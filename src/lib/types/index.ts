@@ -52,6 +52,8 @@ export interface SavedNote {
   element: Element;
   content: string;
   createdAt: string;
+  season?: string;
+  timeOfDay?: string;
 }
 
 // --- Settings ---

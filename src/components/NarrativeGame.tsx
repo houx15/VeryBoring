@@ -4,9 +4,67 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { DrawnCard, NarrativeOption, NarrativeStep, SavedNote } from '@/lib/types';
 import { getSettings } from '@/lib/storage/settings';
 import { saveNote } from '@/lib/storage/notes';
+import { buildNarrativeContext } from '@/lib/context/narrative-context';
+import { getElementConfig } from '@/lib/symbols';
+import { SYMBOL_SVG_MAP } from '@/lib/symbols/svg-patterns';
 import { NarrativeScene } from './NarrativeScene';
 import { NarrativeChoice } from './NarrativeChoice';
 import { useSSEStream } from '@/hooks/useSSEStream';
+
+const TIME_LABELS: Record<string, string> = {
+  dawn: '清晨',
+  morning: '上午',
+  afternoon: '午后',
+  evening: '傍晚',
+  night: '深夜',
+};
+
+function cleanNoteText(raw: string): string {
+  let text = raw
+    .replace(/```(?:json)?\n?/g, '')
+    .replace(/```\n?/g, '')
+    .trim();
+  try {
+    const parsed = JSON.parse(text);
+    if (typeof parsed === 'string') return parsed;
+    if (typeof parsed === 'object' && parsed !== null) {
+      const obj = parsed as Record<string, string>;
+      return obj['纸条'] || obj.note || obj.content || obj.text || raw;
+    }
+  } catch {
+    text = text || raw;
+  }
+  return text;
+}
+
+interface ParsedNote {
+  scene: string;
+  secret: string;
+  action: string;
+}
+
+function parseNoteContent(raw: string): ParsedNote {
+  let scene = '';
+  let secret = '';
+  let action = '';
+
+  const secretMatch = raw.match(/纸条[：:]\s*([\s\S]*?)(?=行动[：:]|$)/);
+  const actionMatch = raw.match(/行动[：:]\s*([\s\S]*?)$/);
+
+  if (secretMatch) {
+    secret = secretMatch[1].trim();
+    const sceneMatch = raw.match(/^([\s\S]*?)(?=纸条[：:])/);
+    if (sceneMatch) scene = sceneMatch[1].trim();
+  } else {
+    secret = raw;
+  }
+
+  if (actionMatch) {
+    action = actionMatch[1].trim();
+  }
+
+  return { scene, secret, action };
+}
 
 interface NarrativeGameProps {
   card: DrawnCard;
@@ -110,7 +168,8 @@ export function NarrativeGame({ card, onRestart }: NarrativeGameProps) {
           history: newHistory,
         });
         if (result !== null) {
-          setNoteText(result);
+          const cleaned = cleanNoteText(result);
+          setNoteText(cleaned);
           setPhase('note');
         }
       } else {
@@ -147,12 +206,15 @@ export function NarrativeGame({ card, onRestart }: NarrativeGameProps) {
   );
 
   const handleKeepNote = useCallback(() => {
+    const ctx = buildNarrativeContext(card.symbol.name, card.symbol.element);
     const note: SavedNote = {
       id: Date.now().toString(36) + Math.random().toString(36).slice(2),
       symbolName: card.symbol.name,
       element: card.symbol.element,
       content: noteText,
       createdAt: new Date().toISOString(),
+      season: ctx.season,
+      timeOfDay: TIME_LABELS[ctx.timeOfDay] ?? ctx.timeOfDay,
     };
     saveNote(note);
     onRestart();
@@ -192,11 +254,28 @@ export function NarrativeGame({ card, onRestart }: NarrativeGameProps) {
     );
   }
 
-  const symbolBadge = (
-    <div className="mb-24 text-center">
-      <span className="text-[13px] text-neutral-400">{card.symbol.name}</span>
-    </div>
-  );
+  const symbolBadge = (() => {
+    const elementConfig = getElementConfig(card.symbol.element);
+    const SymbolSVG = SYMBOL_SVG_MAP[card.symbol.id];
+    return (
+      <div className="mb-32 flex flex-col items-center">
+        <div
+          className="flex h-[80px] w-[56px] flex-col items-center justify-center rounded-lg border-2 bg-[#faf8f4] shadow-sm md:h-[96px] md:w-[68px]"
+          style={{ borderColor: elementConfig.borderColor }}
+        >
+          <div className="flex flex-1 items-center justify-center">
+            <SymbolSVG size={40} color={elementConfig.borderColor} />
+          </div>
+          <span
+            className="pb-8 font-serif text-[16px] md:text-[18px]"
+            style={{ color: elementConfig.borderColor }}
+          >
+            {card.symbol.name}
+          </span>
+        </div>
+      </div>
+    );
+  })();
 
   if (phase === 'loading') {
     return (
@@ -233,14 +312,29 @@ export function NarrativeGame({ card, onRestart }: NarrativeGameProps) {
   }
 
   if (phase === 'note') {
+    const { scene, secret, action } = parseNoteContent(noteText);
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center">
+        {scene && (
+          <p className="mb-32 font-serif text-[16px] leading-[1.8] text-neutral-500">{scene}</p>
+        )}
+
         <div
           className="animate-note-unfold mx-auto max-w-[400px] rounded-lg bg-[#faf6ed] px-32 py-24 shadow-md"
           style={{ transform: 'rotate(2deg)' }}
         >
-          <p className="font-serif text-[16px] leading-[1.9] text-neutral-700">{noteText}</p>
+          {secret && (
+            <p className="font-serif text-[16px] leading-[1.9] text-neutral-700">{secret}</p>
+          )}
         </div>
+
+        {action && (
+          <div className="mx-auto mt-24 max-w-[400px] rounded-lg border border-neutral-200 bg-white px-24 py-16">
+            <span className="mr-8 text-[13px] text-neutral-400">行动</span>
+            <span className="text-[14px] text-neutral-700">{action}</span>
+          </div>
+        )}
+
         <div className="mt-32 flex gap-16">
           <button
             type="button"
