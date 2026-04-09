@@ -294,7 +294,11 @@ export function NarrativeGame({ card, onRestart }: NarrativeGameProps) {
         {symbolBadge}
         <NarrativeScene text={currentScene} onComplete={handleSceneComplete} />
         {phase === 'choosing' && (
-          <NarrativeChoice options={currentOptions} onChoose={handleChoose} />
+          <NarrativeChoice
+            options={currentOptions}
+            element={card.symbol.element}
+            onChoose={handleChoose}
+          />
         )}
       </div>
     );
@@ -331,9 +335,25 @@ export function NarrativeGame({ card, onRestart }: NarrativeGameProps) {
         </div>
 
         {action && (
-          <div className="mx-auto mt-24 max-w-[400px] rounded-lg border border-neutral-200 bg-white px-24 py-16">
-            <span className="mr-8 text-[13px] text-neutral-400">行动</span>
-            <span className="text-[14px] text-neutral-700">{action}</span>
+          <div className="mx-auto mt-24 flex max-w-[400px] items-start gap-12 rounded-xl border border-[#c8956a]/20 bg-[#c8956a]/5 px-24 py-16">
+            <span className="mt-2 flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-full bg-[#c8956a]/15">
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#c8956a"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="m9 18 6-6-6-6" />
+              </svg>
+            </span>
+            <div>
+              <span className="text-[12px] font-medium text-[#c8956a]">行动</span>
+              <p className="mt-4 text-[14px] leading-[1.7] text-neutral-700">{action}</p>
+            </div>
           </div>
         )}
 
