@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { Section } from '@/components/layout/Section';
@@ -9,8 +10,6 @@ import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { getSettings, saveSettings } from '@/lib/storage/settings';
 import { getAllProviders, getProviderDefinition } from '@/lib/llm/providers';
-import type { UserPreferences } from '@/lib/types';
-
 interface FormState {
   provider: string;
   apiKey: string;
@@ -59,9 +58,10 @@ export default function SettingsPage() {
     isCustomModel: initial.isCustomModel,
   });
   const [showApiKey, setShowApiKey] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
+  const [testSuccess, setTestSuccess] = useState<string | null>(null);
   const [isTesting, setIsTesting] = useState(false);
   const [testError, setTestError] = useState<string | null>(null);
+  const router = useRouter();
 
   const providers = useMemo(() => getAllProviders(), []);
   const selectedProvider = useMemo(
@@ -100,6 +100,7 @@ export default function SettingsPage() {
 
   const handleSave = async () => {
     setTestError(null);
+    setTestSuccess(null);
     setIsTesting(true);
 
     try {
@@ -127,12 +128,11 @@ export default function SettingsPage() {
         apiKey: formState.apiKey,
         model: formState.model,
         baseUrl: formState.baseUrl,
-        preferences: {} as UserPreferences,
       };
       saveSettings(settings);
       setIsTesting(false);
-      setIsSaved(true);
-      setTimeout(() => setIsSaved(false), 2000);
+      setTestSuccess('连接成功，已保存');
+      setTimeout(() => router.push('/'), 1500);
     } catch {
       setTestError('网络错误，请检查连接');
       setIsTesting(false);
@@ -292,12 +292,12 @@ export default function SettingsPage() {
                     <span className="text-[14px] font-medium">{testError}</span>
                   </div>
                 )}
-                {isSaved && (
+                {testSuccess && (
                   <div className="text-success animate-fade-in flex items-center gap-8">
                     <div className="bg-success/10 flex h-20 w-20 items-center justify-center rounded-full">
                       <Icon name="Check" size={14} strokeWidth={2.5} className="text-success" />
                     </div>
-                    <span className="text-[14px] font-medium">已保存</span>
+                    <span className="text-[14px] font-medium">{testSuccess}</span>
                   </div>
                 )}
               </div>

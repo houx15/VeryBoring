@@ -406,3 +406,142 @@ body {
 .rotate-y-180 {
   transform: rotateY(180deg);
 }
+
+/* ============================================
+   CARD DRAW ANIMATIONS - V2
+   ============================================ */
+
+/* Card appear — staggered reveal */
+@keyframes card-appear {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+  }
+  60% {
+    transform: translateY(-8px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Card idle float — gentle bobbing */
+@keyframes card-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+/* Card selected — pulse glow */
+@keyframes card-select-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(122, 123, 92, 0);
+  }
+  50% {
+    box-shadow: 0 0 20px 4px rgba(122, 123, 92, 0.15);
+  }
+}
+
+/* Card discard — shrink and fade */
+@keyframes card-discard {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.2;
+    transform: scale(0.85);
+  }
+}
+
+/* Scene text fade in */
+@keyframes scene-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Choice button appear */
+@keyframes choice-appear {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Note unfold */
+@keyframes note-unfold {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) rotate(-5deg);
+  }
+  60% {
+    transform: scale(1.02) rotate(1deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(2deg);
+  }
+}
+
+/* Utility classes for new animations */
+.animate-card-appear {
+  animation: card-appear 500ms var(--ease-out-expo) forwards;
+  opacity: 0;
+}
+
+.animate-card-float {
+  animation: card-float 3s var(--ease-smooth) infinite;
+}
+
+.animate-card-select-glow {
+  animation: card-select-glow 2s var(--ease-smooth) infinite;
+}
+
+.animate-card-discard {
+  animation: card-discard 400ms var(--ease-smooth) forwards;
+}
+
+.animate-scene-fade-in {
+  animation: scene-fade-in 400ms var(--ease-out-expo) forwards;
+}
+
+.animate-choice-appear {
+  animation: choice-appear 350ms var(--ease-out-expo) forwards;
+  opacity: 0;
+}
+
+.animate-note-unfold {
+  animation: note-unfold 600ms var(--ease-spring) forwards;
+  opacity: 0;
+}
+
+/* Cursor blink for typewriter */
+@keyframes cursor-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.animate-cursor-blink {
+  animation: cursor-blink 1s step-end infinite;
+}

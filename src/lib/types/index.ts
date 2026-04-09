@@ -1,5 +1,60 @@
-export type EntryType = 'eat' | 'move' | 'do' | 'go';
+// --- Elements ---
+export type Element = 'metal' | 'wood' | 'water' | 'fire' | 'earth';
 
+export interface ElementConfig {
+  id: Element;
+  name: string;
+  borderColor: string;
+  tone: string;
+}
+
+// --- Symbols ---
+export interface SymbolDefinition {
+  id: string;
+  name: string;
+  element: Element;
+}
+
+// --- Cards ---
+export interface DrawnCard {
+  symbol: SymbolDefinition;
+  position: number;
+}
+
+// --- Narrative ---
+export type NarrativePhase = 'drawing' | 'intro' | 'playing' | 'note' | 'done';
+
+export interface NarrativeOption {
+  id: string;
+  text: string;
+}
+
+export interface NarrativeStep {
+  sceneText: string;
+  options: NarrativeOption[];
+  choiceId?: string;
+  choiceText?: string;
+}
+
+export interface NarrativeContext {
+  symbolName: string;
+  element: Element;
+  timeOfDay: string;
+  dayOfWeek: string;
+  season: string;
+  weather?: string;
+}
+
+// --- Notes ---
+export interface SavedNote {
+  id: string;
+  symbolName: string;
+  element: Element;
+  content: string;
+  createdAt: string;
+}
+
+// --- Settings ---
 export interface ProviderDefinition {
   id: string;
   name: string;
@@ -15,47 +70,4 @@ export interface UserSettings {
   apiKey: string;
   model: string;
   baseUrl: string;
-  preferences: UserPreferences;
-}
-
-export interface UserPreferences {
-  diet?: 'light' | 'heavy' | 'none';
-  activity?: 'home' | 'outdoor';
-  budget?: 'low' | 'medium' | 'high';
-  exerciseLevel?: 'light' | 'moderate' | 'intense';
-}
-
-export interface QuestionOption {
-  id: string;
-  label: string;
-  icon?: string;
-}
-
-export interface QuestionCondition {
-  questionId: string;
-  answerIds: string[];
-}
-
-export interface Question {
-  id: string;
-  text: string;
-  options: QuestionOption[];
-  followUp?: Record<string, string>;
-  condition?: QuestionCondition;
-}
-
-export interface SnippetResult {
-  actionPath: string;
-  timeEstimate: string;
-  sceneDescription: string;
-  rawResponse: string;
-}
-
-export interface HistoryEntry {
-  id: string;
-  entryType: EntryType;
-  answers: Record<string, string>;
-  snippet: SnippetResult;
-  accepted: boolean;
-  timestamp: number;
 }

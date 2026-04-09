@@ -81,4 +81,84 @@ export class OpenAIProvider implements LLMProvider {
 
     return content.trim();
   }
+
+  async *generateStream(options: LLMGenerateOptions): AsyncIterable<string> {
+    const {
+      messages,
+      apiKey,
+      model = DEFAULT_MODEL,
+      temperature = DEFAULT_TEMPERATURE,
+      maxTokens = DEFAULT_MAX_TOKENS,
+    } = options;
+
+    const body = JSON.stringify({
+      model,
+      messages: messages.map((m) => ({ role: m.role, content: m.content })),
+      temperature,
+      max_tokens: maxTokens,
+      stream: true,
+    });
+
+    let response: Response;
+    try {
+      response = await fetch(this.apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body,
+      });
+    } catch {
+      throw new LLMError('网络请求失败，请检查网络连接', 'NETWORK_ERROR');
+    }
+
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        throw new LLMAuthError();
+      }
+      if (response.status === 429) {
+        throw new LLMRateLimitError();
+      }
+      throw new LLMError('AI 服务暂时不可用，请稍后再试', 'PROVIDER_ERROR');
+    }
+
+    const reader = response.body?.getReader();
+    if (!reader) {
+      throw new LLMError('无法读取流式响应', 'STREAM_ERROR');
+    }
+
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() ?? '';
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed || !trimmed.startsWith('data: ')) continue;
+          const data = trimmed.slice(6);
+          if (data === '[DONE]') return;
+
+          try {
+            const parsed = JSON.parse(data) as {
+              choices?: Array<{ delta?: { content?: string } }>;
+            };
+            const content = parsed.choices?.[0]?.delta?.content;
+            if (content) yield content;
+          } catch {
+            // Skip malformed JSON chunks
+          }
+        }
+      }
+    } finally {
+      reader.releaseLock();
+    }
+  }
 }

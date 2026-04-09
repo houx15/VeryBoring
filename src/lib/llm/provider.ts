@@ -1,5 +1,3 @@
-import type { EntryType } from '@/lib/types';
-import type { UserPreferences } from '@/lib/types';
 import { OpenAIProvider } from './openai';
 import { AnthropicProvider } from './anthropic';
 
@@ -18,6 +16,7 @@ export interface LLMGenerateOptions {
 
 export interface LLMProvider {
   generate(options: LLMGenerateOptions): Promise<string>;
+  generateStream(options: LLMGenerateOptions): AsyncIterable<string>;
 }
 
 export function createProvider(protocol: 'openai' | 'anthropic', baseUrl: string): LLMProvider {
@@ -30,5 +29,3 @@ export function createProvider(protocol: 'openai' | 'anthropic', baseUrl: string
       throw new Error(`不支持的 AI 协议: ${protocol satisfies never}`);
   }
 }
-
-export type { EntryType, UserPreferences };
