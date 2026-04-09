@@ -7,6 +7,7 @@ import { saveNote } from '@/lib/storage/notes';
 import { buildNarrativeContext } from '@/lib/context/narrative-context';
 import { getElementConfig } from '@/lib/symbols';
 import { SYMBOL_SVG_MAP } from '@/lib/symbols/svg-patterns';
+import { useSettingsModal } from '@/context/SettingsContext';
 import { NarrativeScene } from './NarrativeScene';
 import { NarrativeChoice } from './NarrativeChoice';
 import { useSSEStream } from '@/hooks/useSSEStream';
@@ -82,11 +83,12 @@ export function NarrativeGame({ card, onRestart }: NarrativeGameProps) {
   const [error, setError] = useState<string | null>(null);
   const { startStream, text: streamText, error: streamError } = useSSEStream();
   const stepCountRef = useRef(0);
+  const { openSettings } = useSettingsModal();
 
   const getLLMSettings = useCallback(() => {
     const settings = getSettings();
     if (!settings) {
-      setError('请先配置 AI 设置');
+      openSettings();
       return null;
     }
     return {
@@ -95,7 +97,7 @@ export function NarrativeGame({ card, onRestart }: NarrativeGameProps) {
       model: settings.model,
       baseUrl: settings.baseUrl,
     };
-  }, []);
+  }, [openSettings]);
 
   useEffect(() => {
     const fetchStart = async () => {
