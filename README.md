@@ -4,7 +4,7 @@
 
 A card-draw narrative game. Open the app, draw 5 cards from a deck of 50 symbols across 5 elements, pick one, and let the LLM guide you through a short narrative. At the end, you receive a crumpled note -- a secret whispered to you. Collect it or discard it.
 
-**[Live Demo](#)** · **[PRD](docs/PRD.md)** · **[Design System](docs/WebVI.md)**
+**[Live Demo](#)** · **[PRD](docs/PRD-v2.md)** · **[Design System](docs/WebVI.md)**
 
 ---
 
@@ -110,16 +110,17 @@ Settings are stored in your browser's localStorage. No server-side storage.
 src/
   app/                              # Next.js App Router pages
     page.tsx                        # Home -- card draw screen
+    layout.tsx                      # Root layout with metadata
+    globals.css                     # Theme tokens + animations
+    favicon.ico
     notes/page.tsx                  # Notes collection
-    settings/page.tsx               # LLM provider configuration
+    settings/page.tsx               # Redirects to / (settings is a modal)
     api/
       narrative/
         start/route.ts              # Generate first narrative scene
         step/route.ts               # Continue narrative with choice
         conclude/route.ts           # Generate crumpled note
       test-connection/route.ts      # Provider connectivity test
-    globals.css                     # Theme tokens + animations
-    layout.tsx                      # Root layout with metadata
   components/
     CardDraw.tsx                    # 5-card draw animation + selection
     Card.tsx                        # Individual card with SVG symbol
@@ -127,14 +128,21 @@ src/
     NarrativeScene.tsx              # Scene text display
     NarrativeChoice.tsx             # Two-option choice buttons
     NoteCard.tsx                    # Crumpled note display
+    ClientLayout.tsx                # Client wrapper (SettingsProvider, auto-open)
+    Footer.tsx                      # Footer with nav links
+    SettingsModal.tsx               # LLM provider configuration modal
     layout/
+      index.ts                      # Barrel export
       PageContainer.tsx             # Max-width container
       Section.tsx                   # Spacing section
     ui/
+      index.ts                      # Barrel export
       Button.tsx                    # Base button
       Card.tsx                      # Base card wrapper
       Icon.tsx                      # Lucide icon wrapper
       OptionButton.tsx              # Choice option button
+  context/
+    SettingsContext.tsx              # Settings modal open/close state
   hooks/
     useTypewriter.ts                # Typewriter text animation
     useSSEStream.ts                 # Server-sent events streaming
@@ -152,21 +160,26 @@ src/
       svg-patterns.tsx              # SVG components for each symbol
       utils.ts                      # drawCards(), getSymbolById()
       index.ts                      # Barrel export
+      __tests__/symbols.test.ts
     context/
       narrative-context.ts          # Time/season/day context builder
+      __tests__/narrative-context.test.ts
     prompts/
       narrative-v1.ts               # Prompt templates (start/step/conclude)
+      __tests__/narrative-v1.test.ts
     storage/
       helpers.ts                    # localStorage helpers
       settings.ts                   # Settings CRUD
       notes.ts                      # Notes collection CRUD
       index.ts                      # Barrel export
+      __tests__/notes.test.ts
     types/
       index.ts                      # Shared TypeScript types
-    test/
-      setup.ts                      # Test configuration
+  test/
+    setup.ts                        # Test configuration
 docs/
-  PRD.md                            # Product requirements (Chinese)
+  PRD.md                            # Product requirements v1 (archived)
+  PRD-v2.md                         # Product requirements v2 (current)
   WebVI.md                          # Visual identity & design system
 ```
 
@@ -181,13 +194,13 @@ pnpm start            # Start production server
 pnpm lint             # ESLint
 pnpm typecheck        # TypeScript type checking (tsc --noEmit)
 pnpm test             # Run all tests (Vitest)
-pnpm test -- --run    # Run tests once (no watch)
+pnpm test:watch       # Run tests in watch mode
 pnpm test -- path/to/test.test.ts   # Run single test file
 ```
 
 ---
 
-## Design System -- "Calm Playfulness"
+## Design System -- "Calm Functionalism"
 
 The UI follows a "Calm Functionalism with warmth" aesthetic inspired by Apple's design philosophy:
 
